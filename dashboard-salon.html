@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Salon</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+
+/* RESET */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/*
+  VARIABLES DE COLOR
+  Cambia estos valores para modificar el tema visual completo:
+  --bg       : fondo principal
+  --panel    : fondo de cada tarjeta
+  --accent   : color azul cyan (bordes, titulos, reloj)
+  --accent2  : color naranja (panel de mensaje)
+  --text     : texto principal
+  --muted    : texto secundario
+  --border   : color de bordes
+  --glow     : sombra de brillo azul
+*/
+:root {
+  --bg:      #05080f;
+  --panel:   rgba(10, 18, 35, 0.85);
+  --accent:  #00d4ff;
+  --accent2: #ff6b35;
+  --gold:    #ffd700;
+  --text:    #e8f4fd;
+  --muted:   #6b8caa;
+  --border:  rgba(0, 212, 255, 0.2);
+  --glow:    0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Pantalla completa sin scroll */
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  overflow: hidden;
+}
+
+/* Puntos decorativos tipo estrellas en el fondo */
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(0,212,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 30%, rgba(0,212,255,.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 20%, rgba(0,212,255,.3) 0%, transparent 100%),
+    radial-gradient(2px 2px at 15% 85%, rgba(0,212,255,.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 10%, rgba(255,255,255,.3) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Gradientes de atmosfera */
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,60,90,.4) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 100%, rgba(0,30,60,.3) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+/*
+  LAYOUT PRINCIPAL (rejilla)
+  Zonas del grid:
+    topbar   - barra superior ancho completo
+    clock    - reloj grande izquierda
+    sidebar  - mensaje + fechas derecha
+    announce - anuncios ancho completo
+    ticker   - barra inferior ancho completo
+
+  Para cambiar el ancho de la columna derecha,
+  modifica "340px" en grid-template-columns.
+*/
+.layout {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr 200px auto;
+  grid-template-columns: 1fr 520px;
+  grid-template-areas:
+    "topbar  topbar"
+    "clock   sidebar"
+    "announce announce"
+    "ticker  ticker";
+  gap: 16px;
+  height: 100vh;
+  padding: 20px;
+}
+
+/* BARRA SUPERIOR */
+.top-bar {
+  grid-area: topbar;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 28px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--glow);
+}
+
+/* Nombre escuela - arriba izquierda */
+.school-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem; font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: .85;
+}
+
+/* Fecha - centro */
+.date-display { font-size: .95rem; color: var(--muted); letter-spacing: 1px; text-align: center; }
+.date-display span { color: var(--text); font-weight: 600; }
+
+/* Estado del calendario - arriba derecha */
+.cal-status { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--muted); }
+.cal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.cal-dot.ok  { background: #4ade80; box-shadow: 0 0 8px #4ade80; animation: pulse 2s infinite; }
+.cal-dot.err { background: #f87171; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .5; transform: scale(.8); }
+}
+
+/* PANEL DEL RELOJ */
+.clock-panel {
+  grid-area: clock;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--glow);
+  position: relative; overflow: hidden;
+}
+
+/* Efecto de rotacion decorativo */
+.clock-panel::before {
+  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(0,212,255,.03) 50%, transparent 100%);
+  animation: rotateBg 20s linear infinite;
+}
+@keyframes rotateBg { to { transform: rotate(360deg); } }
+
+/* Fila horizontal: numeros grandes + (AM/PM y segundos al lado) */
+.clock-main { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+.clock-side  { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+
+/*
+  Tamano del reloj - edita los valores de clamp(minimo, fluido, maximo)
+  Para mas grande sube el tercer valor, ej: clamp(3.5rem, 8vw, 8rem)
+*/
+.clock-time {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  font-weight: 900; color: var(--text);
+  letter-spacing: 4px; line-height: 1;
+  text-shadow: 0 0 40px rgba(0,212,255,.5), 0 0 80px rgba(0,212,255,.2);
+}
+
+/* Segundos - a la derecha */
+.clock-seconds {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  color: var(--accent); letter-spacing: 2px; opacity: .85;
+}
+
+/* AM / PM */
+.clock-period {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(.85rem, 1.4vw, 1.1rem);
+  color: var(--muted); letter-spacing: 3px;
+}
+
+/* Eventos de hoy debajo del reloj */
+.today-strip {
+  margin-top: 20px; width: 100%;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 180px; overflow: hidden;
+}
+.today-label { font-size: .65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+.today-event { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(0,212,255,.06); border-radius: 8px; border: 1px solid rgba(0,212,255,.12); }
+.today-time  { font-family: 'Orbitron', monospace; font-size: .7rem; color: var(--accent); min-width: 72px; }
+.today-name  { font-size: .82rem; color: var(--text); }
+.no-events   { font-size: .8rem; color: var(--muted); font-style: italic; padding: 6px 0; }
+
+/* SIDEBAR DERECHA */
+.sidebar { grid-area: sidebar; display: flex; flex-direction: column; gap: 16px; }
+
+/* Panel del mensaje positivo del dia */
+.message-panel {
+  background: var(--panel);
+  border: 1px solid rgba(255,107,53,.3);
+  border-left: 4px solid var(--accent2);
+  border-radius: 16px; padding: 28px;
+  backdrop-filter: blur(16px);
+  display: flex; flex-direction: column; justify-content: center;
+  box-shadow: 0 0 20px rgba(255,107,53,.15);
+  flex: 1;
+  overflow: hidden;
+}
+.message-label { font-size: .7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent2); margin-bottom: 12px; font-weight: 600; }
+
+/* Tamano del mensaje - sube el tercer valor de clamp para hacerlo mas grande */
+.message-text { font-size: clamp(1.4rem, 2.8vw, 2.4rem); line-height: 1.5; color: var(--text); font-weight: 300; font-style: italic; }
+.message-author { margin-top: 12px; font-size: .85rem; color: var(--muted); font-weight: 600; }
+
+/* Animacion de entrada del mensaje */
+.quote-fade { animation: fadeInUp .8s ease; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Panel de proximas fechas con countdown */
+.countdown-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; backdrop-filter: blur(16px); box-shadow: var(--glow); flex-shrink: 0; }
+
+/* Titulo de seccion con punto pulsante */
+.panel-title { font-family: 'Orbitron', monospace; font-size: .75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.panel-title::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s ease-in-out infinite; }
+
+.countdown-items { display: flex; flex-direction: column; gap: 8px; }
+.countdown-item  { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: rgba(74,222,128,.05); border-radius: 8px; border: 1px solid rgba(74,222,128,.2); }
+.countdown-name  { font-size: 1.1rem; color: var(--text); font-weight: 500; flex: 1; margin-right: 8px; }
+.countdown-days  { font-family: 'Orbitron', monospace; font-size: 1.3rem; font-weight: 700; color: #4ade80; white-space: nowrap; }
+.countdown-days span { font-size: .6rem; color: var(--muted); margin-left: 3px; }
+
+/* PANEL DE ANUNCIOS */
+.announcements-panel {
+  grid-area: announce;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px; backdrop-filter: blur(16px); box-shadow: var(--glow);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+.announcements-list { display: flex; flex-direction: column; gap: 10px; overflow: hidden; flex: 1; }
+
+/* Tarjeta de anuncio - colores segun tipo:
+   normal  = borde azul
+   urgente = borde naranja (urgent: true en CONFIG)
+   cal     = borde verde (viene del calendario) */
+.announcement-item           { display: flex; gap: 12px; padding: 12px 14px; background: rgba(0,212,255,.05); border-radius: 8px; border: 1px solid rgba(0,212,255,.1); }
+.announcement-item.highlight { background: rgba(255,107,53,.08); border-color: rgba(255,107,53,.25); }
+.announcement-item.cal-event { background: rgba(74,222,128,.05); border-color: rgba(74,222,128,.2); }
+
+.ann-icon  { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.ann-title { font-weight: 600; font-size: .9rem; color: var(--text); margin-bottom: 3px; }
+.ann-desc  { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+.ann-tag        { display: inline-block; font-size: .65rem; padding: 2px 7px; border-radius: 20px; background: rgba(0,212,255,.15); color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
+.ann-tag.urgent { background: rgba(255,107,53,.2); color: var(--accent2); }
+.ann-tag.cal    { background: rgba(74,222,128,.15); color: #4ade80; }
+
+/* Barra de progreso que indica cuando van a rotar los anuncios */
+.progress-bar  { height: 2px; background: rgba(0,212,255,.1); border-radius: 2px; margin-top: auto; padding-top: 12px; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .1s linear; box-shadow: 0 0 8px var(--accent); }
+
+/* TICKER INFERIOR
+   Para cambiar la velocidad edita "40s" abajo en @keyframes ticker */
+.ticker-bar {
+  grid-area: ticker;
+  background: rgba(0,212,255,.08); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 0;
+  overflow: hidden; position: relative;
+}
+.ticker-label {
+  position: absolute; left: 0; top: 0; bottom: 0; padding: 10px 16px;
+  background: var(--accent); color: var(--bg);
+  font-family: 'Orbitron', monospace; font-size: .7rem; font-weight: 700; letter-spacing: 2px;
+  display: flex; align-items: center; z-index: 2; border-radius: 7px 0 0 7px;
+}
+.ticker-content { display: flex; animation: ticker 40s linear infinite; padding-left: 120px; white-space: nowrap; }
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item { font-size: .85rem; color: var(--text); padding: 0 48px; opacity: .8; }
+.ticker-item::before { content: '\25C6'; color: var(--accent); margin-right: 12px; font-size: .6rem; }
+
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="top-bar">
+    <div class="school-name" id="schoolName">Escuela Barceloneta PR</div>
+    <div class="date-display"><span id="fullDate">-</span></div>
+    <div class="cal-status">
+      <div class="cal-dot" id="calDot"></div>
+      <span id="calStatusText">Cargando calendario...</span>
+    </div>
+  </div>
+
+  <div class="clock-panel">
+    <div class="clock-main">
+      <div class="clock-time" id="clockTime">00:00</div>
+      <div class="clock-side">
+        <div class="clock-period"  id="clockPeriod">AM</div>
+        <div class="clock-seconds" id="clockSec">:00</div>
+      </div>
+    </div>
+    <div class="today-strip">
+      <div class="today-label">Hoy</div>
+      <div id="todayEvents"><div class="no-events">Cargando...</div></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="message-panel">
+      <div class="message-label">Mensaje del dia</div>
+      <div id="quoteContainer" class="quote-fade">
+        <div class="message-text"   id="quoteText"></div>
+        <div class="message-author" id="quoteAuthor"></div>
+      </div>
+    </div>
+    <div class="countdown-panel">
+      <div class="panel-title">Proximas fechas</div>
+      <div class="countdown-items" id="countdownList"></div>
+    </div>
+  </div>
+
+  <div class="announcements-panel">
+    <div class="panel-title">Anuncios</div>
+    <div class="announcements-list" id="announcementsList"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="annProgress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="ticker-bar">
+    <div class="ticker-label">INFO</div>
+    <div class="ticker-content" id="tickerContent"></div>
+  </div>
+
+</div>
+<script>
+// =============================================================
+//  CONFIGURACION - EDITA AQUI
+//  Esta es la unica seccion que necesitas modificar normalmente
+// =============================================================
+const CONFIG = {
+
+  // Nombre que aparece en la barra superior
+  schoolName: "Escuela - Barceloneta, PR",
+
+  // Enlace ICS de tu Google Calendar "Dashboard Salon"
+  // Para actualizarlo: calendar.google.com -> tu calendario ->
+  // tres puntos -> Configuracion -> "Direccion secreta en formato iCal"
+  icsUrl: "https://calendar.google.com/calendar/ical/7d76282e40a9dad70dce4e2e395ffaec5ca530c3183284d6651984ec99740e9b%40group.calendar.google.com/private-56115b398ef981a679e76f3a7bf3fdbb/basic.ics",
+
+  // Proxies CORS - el sistema intenta cada uno hasta que funcione
+  // Si todos fallan, agrega tu propio proxy aqui
+  corsProxies: [
+    "https://corsproxy.io/?",
+    "https://api.allorigins.win/raw?url=",
+    "https://proxy.cors.sh/",
+    "https://thingproxy.freeboard.io/fetch/"
+  ],
+
+  // Anuncios manuales
+  // Campos: icon (emoji), title, desc, tag, urgent (true/false)
+  // urgent: true = borde naranja | false = borde azul
+  announcements: [
+    {
+      icon: "🤖",
+      title: "Torneo WRO - practica",
+      desc: "Equipo de robotica: practica hoy a las 3:30 PM. Trae tu laptop.",
+      tag: "Extracurricular",
+      urgent: false
+    },
+    {
+      icon: "🎮",
+      title: "RoboCode - beta abierta",
+      desc: "Ya pueden acceder a la plataforma de programacion con Python.",
+      tag: "Tecnologia",
+      urgent: false
+    },
+    {
+      icon: "🏆",
+      title: "Celebracion HERC",
+      desc: "Reconocimiento al equipo del Rover Challenge. Felicidades!",
+      tag: "Logro",
+      urgent: false
+    }
+  ],
+
+  // Mensajes positivos del dia
+  // Se muestran uno por dia segun el dia de la semana
+  quotes: [
+    { text: "El exito es la suma de pequenos esfuerzos repetidos dia tras dia.", author: "- Robert Collier" },
+    { text: "No importa lo lento que vayas, siempre y cuando no te detengas.", author: "- Confucio" },
+    { text: "El unico modo de hacer un gran trabajo es amar lo que haces.", author: "- Steve Jobs" },
+    { text: "Cada experto fue alguna vez un principiante.", author: "- Helen Hayes" },
+    { text: "La educacion es el arma mas poderosa que puedes usar para cambiar el mundo.", author: "- Nelson Mandela" },
+    { text: "Cree en ti mismo y todo sera posible.", author: "- Anonimo" },
+    { text: "Los errores son prueba de que lo estas intentando.", author: "- Jennifer Lim" },
+    { text: "Hoy es un buen dia para aprender algo nuevo.", author: "- Anonimo" },
+    { text: "Tu unico limite eres tu mismo.", author: "- Anonimo" },
+    { text: "El cerebro que aprende es el cerebro que se transforma.", author: "- Neuroscience Today" }
+  ],
+
+  // Mensajes del ticker (barra inferior desplazante)
+  // Agregalos o cambialos libremente
+  tickerItems: [
+    "Recuerda lavarte las manos con frecuencia",
+    "El WiFi del salon: ESC-TECH - contrasena en pizarron",
+    "Biblioteca abierta de 7:30 AM a 4:00 PM",
+    "Comedor: 11:30 AM - 12:30 PM | Segunda ronda: 12:30 - 1:30 PM",
+    "Si tienes dudas, pregunta! No hay preguntas tontas",
+    "Recuerda guardar tu trabajo frecuentemente"
+  ]
+
+};
+
+// =============================================================
+//  PARSER DE CALENDARIO ICS
+//  Convierte el archivo .ics en una lista de eventos
+//  No necesitas editar esta seccion
+// =============================================================
+
+function parseICS(text) {
+  const events = [];
+  const blocks = text.split('BEGIN:VEVENT');
+  blocks.shift();
+  for (const block of blocks) {
+    const get = (key) => {
+      const m = block.match(new RegExp(key + '[^:]*:([^\r\n]+)'));
+      return m ? m[1].trim() : '';
+    };
+    const summary = get('SUMMARY');
+    const dtstart = get('DTSTART');
+    const desc    = get('DESCRIPTION');
+    if (!summary || !dtstart) continue;
+    events.push({ summary, dtstart, desc });
+  }
+  return events;
+}
+
+// Convierte fecha ICS a objeto Date de JavaScript
+function parseICSDate(str) {
+  if (!str) return null;
+  const s = str.replace(/[:\-]/g, '');
+  const y = +s.slice(0,4), mo = +s.slice(4,6)-1, d = +s.slice(6,8);
+  const h = +(s.slice(9,11) || 0), mi = +(s.slice(11,13) || 0);
+  return str.includes('Z')
+    ? new Date(Date.UTC(y, mo, d, h, mi))
+    : new Date(y, mo, d, h, mi);
+}
+
+function isAllDay(dtstart) { return !dtstart.includes('T'); }
+
+function fmtTime(date, allDay) {
+  if (allDay) return 'Todo el dia';
+  return date.toLocaleTimeString('es-PR', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function fmtDate(date) {
+  return date.toLocaleDateString('es-PR', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+// =============================================================
+//  CONEXION AL CALENDARIO
+//  Descarga y procesa el ICS cada 15 minutos
+// =============================================================
+let calEvents = [];
+
+async function fetchCalendar() {
+  const dot  = document.getElementById('calDot');
+  const info = document.getElementById('calStatusText');
+  const proxies = CONFIG.corsProxies;
+  let lastError = '';
+  for (const proxy of proxies) {
+    try {
+      const url = proxy + encodeURIComponent(CONFIG.icsUrl);
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if (!text.includes('BEGIN:VCALENDAR')) throw new Error('Invalid ICS');
+      calEvents = parseICS(text);
+      dot.className = 'cal-dot ok';
+      info.textContent = 'Google Calendar ok - ' + calEvents.length + ' eventos';
+      renderAll();
+      return;
+    } catch(e) {
+      lastError = e.message;
+    }
+  }
+  dot.className = 'cal-dot err';
+  info.textContent = 'Sin conexion al calendario';
+  renderAll();
+}
+
+// =============================================================
+//  EVENTOS DE HOY
+//  Muestra bajo el reloj los eventos del dia actual
+// =============================================================
+function renderTodayEvents() {
+  const container = document.getElementById('todayEvents');
+  const now = new Date();
+  const todayKey = '' + now.getFullYear()
+    + String(now.getMonth()+1).padStart(2,'0')
+    + String(now.getDate()).padStart(2,'0');
+
+  const todays = calEvents.filter(ev =>
+    ev.dtstart.replace(/[TZ\-:]/g, '').slice(0, 8) === todayKey
+  );
+
+  if (!todays.length) {
+    container.innerHTML = '<div class="no-events">Sin eventos hoy</div>';
+    return;
+  }
+  container.innerHTML = todays.slice(0, 4).map(ev => {
+    const d = parseICSDate(ev.dtstart);
+    const allDay = isAllDay(ev.dtstart);
+    return '<div class="today-event">'
+      + '<span class="today-time">' + (d ? fmtTime(d, allDay) : '') + '</span>'
+      + '<span class="today-name">' + ev.summary + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+// =============================================================
+//  ANUNCIOS
+//  Combina eventos del calendario + anuncios manuales
+//  Rota en grupos de MAX_VIS cada ANN_DUR milisegundos
+// =============================================================
+const MAX_VIS = 3;  // cuantos anuncios se ven a la vez
+let annIdx = 0;
+let allAnns = [];
+
+function buildAnns() {
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const calAnns = calEvents
+    .map(ev => ({ ev, d: parseICSDate(ev.dtstart) }))
+    .filter(function(x) { return x.d && x.d >= now; })
+    .sort(function(a, b) { return a.d - b.d; })
+    .slice(0, 8)
+    .map(function(x) {
+      const allDay = isAllDay(x.ev.dtstart);
+      const timeStr = allDay ? fmtDate(x.d) : (fmtDate(x.d) + ' ' + fmtTime(x.d, false));
+      const descSnip = x.ev.desc ? x.ev.desc.slice(0,70) + (x.ev.desc.length > 70 ? '...' : '') + ' - ' : '';
+      return { icon: '📅', title: x.ev.summary, desc: descSnip + timeStr, tag: 'Calendario', urgent: false, isCal: true };
+    });
+  allAnns = calAnns.concat(CONFIG.announcements);
+}
+
+function renderAnnouncements() {
+  buildAnns();
+  const list = document.getElementById('announcementsList');
+  list.innerHTML = '';
+  if (!allAnns.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:.85rem">No hay anuncios</div>';
+    return;
+  }
+  for (var i = 0; i < MAX_VIS; i++) {
+    var a = allAnns[(annIdx + i) % allAnns.length];
+    var div = document.createElement('div');
+    div.className = 'announcement-item' + (a.urgent ? ' highlight' : '') + (a.isCal ? ' cal-event' : '');
+    div.innerHTML = '<div class="ann-icon">' + a.icon + '</div>'
+      + '<div>'
+      + '<div class="ann-title">' + a.title + '</div>'
+      + '<div class="ann-desc">' + a.desc + '</div>'
+      + '<span class="ann-tag ' + (a.urgent ? 'urgent' : '') + ' ' + (a.isCal ? 'cal' : '') + '">' + a.tag + '</span>'
+      + '</div>';
+    list.appendChild(div);
+  }
+}
+
+function cycleAnns() {
+  if (allAnns.length) annIdx = (annIdx + 1) % allAnns.length;
+  renderAnnouncements();
+}
+
+// =============================================================
+//  COUNTDOWN - PROXIMAS FECHAS
+//  Muestra los proximos 5 eventos con dias restantes
+// =============================================================
+function renderCountdowns() {
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const list = document.getElementById('countdownList');
+  const upcoming = calEvents
+    .map(ev => ({ name: ev.summary, d: parseICSDate(ev.dtstart) }))
+    .filter(function(x) { return x.d && x.d >= now; })
+    .sort(function(a, b) { return a.d - b.d; })
+    .slice(0, 5);
+
+  if (!upcoming.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:.8rem;padding:6px 0">Agrega eventos al calendario para verlos aqui</div>';
+    return;
+  }
+  list.innerHTML = upcoming.map(function(x) {
+    var diff = Math.ceil((x.d - now) / 86400000);
+    return '<div class="countdown-item">'
+      + '<span class="countdown-name">' + x.name + '</span>'
+      + '<span class="countdown-days">' + diff + '<span>dias</span></span>'
+      + '</div>';
+  }).join('');
+}
+
+// =============================================================
+//  RELOJ Y FECHA
+// =============================================================
+
+// Actualiza la hora cada segundo
+function updateClock() {
+  const now = new Date();
+  var h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  const period = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clockTime').textContent   = String(h).padStart(2,'0') + ':' + m;
+  document.getElementById('clockSec').textContent    = ':' + s;
+  document.getElementById('clockPeriod').textContent = period;
+}
+
+// Actualiza la fecha cada minuto
+function updateDate() {
+  const s = new Date().toLocaleDateString('es-PR', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  document.getElementById('fullDate').textContent = s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// =============================================================
+//  MENSAJE POSITIVO
+//  Selecciona uno segun el dia de la semana
+// =============================================================
+function renderQuote() {
+  const q = CONFIG.quotes[new Date().getDay() % CONFIG.quotes.length];
+  const c = document.getElementById('quoteContainer');
+  c.classList.remove('quote-fade');
+  void c.offsetWidth;
+  c.classList.add('quote-fade');
+  document.getElementById('quoteText').textContent   = '"' + q.text + '"';
+  document.getElementById('quoteAuthor').textContent = q.author;
+}
+
+// =============================================================
+//  TICKER INFERIOR
+//  Duplica los items para un loop visual sin corte
+// =============================================================
+function buildTicker() {
+  const items = CONFIG.tickerItems.concat(CONFIG.tickerItems);
+  document.getElementById('tickerContent').innerHTML =
+    items.map(t => '<span class="ticker-item">' + t + '</span>').join('');
+}
+
+// =============================================================
+//  RENDER ALL - actualiza todos los paneles dinamicos
+// =============================================================
+function renderAll() {
+  renderTodayEvents();
+  renderAnnouncements();
+  renderCountdowns();
+}
+
+// =============================================================
+//  INICIALIZACION
+// =============================================================
+document.getElementById('schoolName').textContent = CONFIG.schoolName;
+
+updateClock();
+updateDate();
+renderQuote();
+buildTicker();
+
+// Intervalos de actualizacion automatica
+setInterval(updateClock, 1000);        // reloj: cada segundo
+setInterval(updateDate,  60 * 1000);   // fecha: cada minuto
+
+// Carga el calendario ahora y lo refresca cada 15 minutos
+fetchCalendar();
+setInterval(fetchCalendar, 15 * 60 * 1000);
+
+// Rotacion de anuncios con barra de progreso
+var elapsed = 0;
+var TICK    = 100;
+var ANN_DUR = 8000;  // tiempo por grupo en ms (8000 = 8 segundos)
+
+setInterval(function() {
+  elapsed += TICK;
+  document.getElementById('annProgress').style.width = (elapsed / ANN_DUR * 100) + '%';
+  if (elapsed >= ANN_DUR) {
+    elapsed = 0;
+    cycleAnns();
+  }
+}, TICK);
+
+</script>
+</body>
+</html>
