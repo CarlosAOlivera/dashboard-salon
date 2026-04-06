@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Salon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+
+  <!-- BARRA SUPERIOR -->
+  <div class="top-bar">
+    <div class="school-name" id="schoolName">Cargando...</div>
+    <div class="date-display"><span id="fullDate">-</span></div>
+    <div class="cal-status">
+      <div class="cal-dot" id="calDot"></div>
+      <span id="calStatusText">Cargando calendario...</span>
+    </div>
+  </div>
+
+  <!-- TICKER (entre barra superior y contenido) -->
+  <div class="ticker-bar">
+    <div class="ticker-label">INFO</div>
+    <div class="ticker-content" id="tickerContent"></div>
+  </div>
+
+  <!-- RELOJ -->
+  <div class="clock-panel">
+    <div class="clock-main">
+      <div class="clock-time" id="clockTime">00:00</div>
+      <div class="clock-side">
+        <div class="clock-period"  id="clockPeriod">AM</div>
+        <div class="clock-seconds" id="clockSec">:00</div>
+      </div>
+    </div>
+    <!-- CLIMA -->
+    <div class="weather-strip" id="weatherStrip">
+      <div class="weather-main">
+        <span class="weather-icon" id="weatherIcon">—</span>
+        <span class="weather-temp" id="weatherTemp">--</span>
+      </div>
+      <div class="weather-detail">
+        <span class="weather-desc"  id="weatherDesc">Cargando clima...</span>
+        <span class="weather-meta"  id="weatherMeta"></span>
+      </div>
+    </div>
+
+    <div class="today-strip">
+      <div class="today-label">Hoy</div>
+      <div id="todayEvents"><div class="no-events">Cargando...</div></div>
+    </div>
+    <!-- ANUNCIOS dentro del panel del reloj -->
+    <div class="announcements-panel">
+      <div class="panel-title">Anuncios</div>
+      <div class="announcements-list" id="announcementsList"></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="annProgress" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR DERECHA -->
+  <div class="sidebar">
+
+    <!-- Mensaje positivo del dia -->
+    <div class="message-panel">
+      <div class="message-label">Mensaje del dia</div>
+      <div id="quoteContainer" class="quote-fade">
+        <div class="message-text"   id="quoteText"></div>
+        <div class="message-author" id="quoteAuthor"></div>
+      </div>
+    </div>
+
+    <!-- Proximas fechas con countdown -->
+    <div class="countdown-panel">
+      <div class="panel-title">Proximas fechas</div>
+      <div class="countdown-items" id="countdownList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- config.js primero, luego app.js -->
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
