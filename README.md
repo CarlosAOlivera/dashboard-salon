@@ -4,7 +4,7 @@ Dashboard de pantalla completa para salón de clases. Diseñado para mostrarse e
 
 ## Vista previa
 
-> **URL en vivo:** `https://carlosaolivera.github.io/dashboard-salon/`
+> **URL en vivo:** `https://carlosaolivera.github.io/dashboard-salon/dashboard
 
 ---
 
