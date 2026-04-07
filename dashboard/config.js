@@ -60,6 +60,13 @@ const CONFIG = {
       desc: "Celebramos el cierre de una gran etapa y el comienzo de nuevos caminos. 🎉¡Felicidades, Clase Graduanda!",
       tag: "Logro",
       urgent: false
+    },
+    {
+      icon: "🍽️",
+      title: "Menú de Almuerzo",
+      desc: "Menu de almuerzo: 🐔 caderas de pollo en salsa bbq, 🍛 arroz chino, repollo, 🥕 zanahoria y 🍐 pera",
+      tag: "Almuerzo",
+      urgent: true 
     }
   ],
 
