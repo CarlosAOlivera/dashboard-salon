@@ -86,11 +86,8 @@ const CONFIG = {
   // Agregalos o cambialos libremente
   // ---------------------------------------------------------------
   tickerItems: [
-    "Recuerda: si tienes sintomas ve al enfermero",
-    "Internet de la escuela: Red_Escuela - Accede con tu cuenta escolar",
-    "Biblioteca abierta de 7:00 AM a 2:00 PM",
+    "Menu de almuerzo: caderas de pollo en salsa bbq, arroz chino, repollo, zanahoria y pera",
     "Si tienes dudas, pregunta! No hay preguntas tontas",
-    "Recuerda guardar tu trabajo frecuentemente",
     "Unit 12.6 Module 1 debe ser trabajado diariamente"
   ],
 
