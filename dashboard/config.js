@@ -49,15 +49,15 @@ const CONFIG = {
     },
     {
       icon: "🏆",
-      title: "ULTIMO TIMBRE - 5 DE MAYO",
-      desc: "Actividad especial para celebrar sus logros, esfuerzo y crecimiento durante el año escolar. ¡Felicidades!",
+      title: "ULTIMO TIMBRE🔔 - 5 DE MAYO",
+      desc: "Actividad especial para 🥳 celebrar sus 🌟 logros, esfuerzo y crecimiento durante el año escolar. 🎉¡Felicidades!🧑‍🎓",
       tag: "Logro",
       urgent: false
     },
     {
       icon: "🎓",
-      title: "GRADUATION DAY - 27 de Mayo",
-      desc: "Celebramos el cierre de una gran etapa y el comienzo de nuevos caminos. 🎉¡Felicidades, Clase Graduanda!",
+      title: "GRADUATION DAY🧑‍🎓 - 27 de Mayo",
+      desc: "🥳Celebramos el cierre de una gran etapa y el 🌟 comienzo de nuevos caminos. 🎉¡Felicidades, Clase Graduanda!",
       tag: "Logro",
       urgent: false
     },
@@ -76,16 +76,16 @@ const CONFIG = {
   // Agrega o quita los que quieras
   // ---------------------------------------------------------------
   quotes: [
-    { text: "El exito es la suma de pequenos esfuerzos repetidos dia tras dia.", author: "- Robert Collier" },
-    { text: "No importa lo lento que vayas, siempre y cuando no te detengas.", author: "- Confucio" },
-    { text: "El unico modo de hacer un gran trabajo es amar lo que haces.", author: "- Steve Jobs" },
-    { text: "Cada experto fue alguna vez un principiante.", author: "- Helen Hayes" },
-    { text: "La educacion es el arma mas poderosa que puedes usar para cambiar el mundo.", author: "- Nelson Mandela" },
-    { text: "Cree en ti mismo y todo sera posible.", author: "- Anonimo" },
-    { text: "Los errores son prueba de que lo estas intentando.", author: "- Jennifer Lim" },
-    { text: "Hoy es un buen dia para aprender algo nuevo.", author: "- Anonimo" },
-    { text: "Tu unico limite eres tu mismo.", author: "- Anonimo" },
-    { text: "El cerebro que aprende es el cerebro que se transforma.", author: "- Neuroscience Today" }
+    { text: "El ✨ exito es la suma de pequenos esfuerzos  🔁 repetidos dia tras dia.", author: "- Robert Collier" },
+    { text: "No importa lo 🐢 lento que vayas, siempre y cuando no te detengas 🚶‍♂️.", author: "- Confucio" },
+    { text: "El unico modo de hacer un gran 💼 trabajo es ❤️‍🔥 amar lo que haces.", author: "- Steve Jobs" },
+    { text: "Cada 🧠 experto fue alguna vez un 🌱 principiante.", author: "- Helen Hayes" },
+    { text: "La 🎓 educacion es el arma mas poderosa que puedes usar para cambiar el 🌍 mundo.", author: "- Nelson Mandela" },
+    { text: "💛 Cree en ti mismo y 💫 todo sera posible.", author: "- Anonimo" },
+    { text: "Los ⚠️ errores son prueba de que lo estas 🔧 intentando.", author: "- Jennifer Lim" },
+    { text: "Hoy es un buen 🌞 día para 📚 aprender algo nuevo.", author: "- Anonimo" },
+    { text: "Tu unico 🔓 limite eres tu mismo.🚀", author: "- Anonimo" },
+    { text: "El 🧠 cerebro que aprende es el cerebro que se transforma.✨ ", author: "- Neuroscience Today" }
   ],
 
   // ---------------------------------------------------------------
@@ -94,8 +94,9 @@ const CONFIG = {
   // ---------------------------------------------------------------
   tickerItems: [
     "Menu de almuerzo: 🍛 arroz integral, garbanzo con 🎃 calabaza, 🥩 chuleta al horno, 🌽 maiz y 🍎 manzana",
-    "Si tienes dudas, pregunta! No hay preguntas tontas",
-    "Unit 12.6 Module 1 debe ser trabajado diariamente"
+    "Si tienes 🤔 dudas, 🙋‍♂️ pregunta! No hay preguntas tontas",
+    "Unit 12.6 📚 Module 1 debe ser trabajado 📅 diariamente",
+    "SI DESEAS PUNTOS ⭐ EXTRAS O 📈 SUBIR TU NOTA PREGUNTALE AL 🧑‍🏫 MAESTRO"
   ],
 
   // ---------------------------------------------------------------
