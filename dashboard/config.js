@@ -64,7 +64,7 @@ const CONFIG = {
     {
       icon: "🍽️",
       title: "Menú de Almuerzo",
-      desc: "Menu de almuerzo: 🐔 caderas de pollo en salsa bbq, 🍛 arroz chino, repollo, 🥕 zanahoria y 🍐 pera",
+      desc: "Menu de almuerzo: 🍛 arroz integral, garbanzo con 🎃 calabaza, 🥩 chuleta al horno, 🌽 maiz y 🍎 manzana",
       tag: "Almuerzo",
       urgent: true 
     }
