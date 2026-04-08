@@ -93,7 +93,7 @@ const CONFIG = {
   // Agregalos o cambialos libremente
   // ---------------------------------------------------------------
   tickerItems: [
-    "Menu de almuerzo: caderas de pollo en salsa bbq, arroz chino, repollo, zanahoria y pera",
+    "Menu de almuerzo: 🍛 arroz integral, garbanzo con 🎃 calabaza, 🥩 chuleta al horno, 🌽 maiz y 🍎 manzana",
     "Si tienes dudas, pregunta! No hay preguntas tontas",
     "Unit 12.6 Module 1 debe ser trabajado diariamente"
   ],
